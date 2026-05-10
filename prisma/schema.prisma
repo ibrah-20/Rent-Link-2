@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  TENANT
+  LANDLORD
+  ADMIN
+}
+
+enum HouseType {
+  SINGLE_ROOM
+  BEDSITTER
+  ONE_BEDROOM
+  TWO_BEDROOM
+  THREE_BEDROOM
+}
+
+enum ListingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum UnitStatus {
+  VACANT
+  OCCUPIED
+  RESERVED
+}
+
+model User {
+  id           String      @id @default(cuid())
+  name         String
+  email        String      @unique
+  phone        String?
+  passwordHash String
+  role         Role        @default(TENANT)
+  avatar       String?
+  isVerified   Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  apartments   Apartment[]
+  savedListings SavedListing[]
+}
+
+model Apartment {
+  id           String        @id @default(cuid())
+  name         String
+  description  String
+  houseType    HouseType
+  totalUnits   Int
+  pricePerMonth Float
+  status       ListingStatus @default(PENDING)
+  amenities    String[]
+  address      String
+  neighborhood String
+  latitude     Float?
+  longitude    Float?
+  landlordId   String
+  landlord     User          @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  images       ApartmentImage[]
+  units        Unit[]
+  savedBy      SavedListing[]
+
+  @@index([neighborhood])
+  @@index([houseType])
+  @@index([status])
+}
+
+model ApartmentImage {
+  id          String    @id @default(cuid())
+  url         String
+  publicId    String?
+  isCover     Boolean   @default(false)
+  apartmentId String
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+}
+
+model Unit {
+  id          String     @id @default(cuid())
+  unitNumber  String
+  floor       Int?
+  status      UnitStatus @default(VACANT)
+  price       Float?
+  notes       String?
+  apartmentId String
+  apartment   Apartment  @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime   @default(now())
+
+  @@unique([apartmentId, unitNumber])
+}
+
+model SavedListing {
+  id          String    @id @default(cuid())
+  userId      String
+  apartmentId String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@unique([userId, apartmentId])
+}
