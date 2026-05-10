@@ -11,18 +11,19 @@ const updateUnitSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string; unitId: string } }
+  { params }: { params: Promise<{ id: string; unitId: string }> }
 ) {
   try {
+    const { id, unitId } = await params;
     const user = getUserFromRequest(request);
     if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
     const unit = await prisma.unit.findUnique({
-      where: { id: params.unitId },
+      where: { id: unitId },
       include: { apartment: { select: { landlordId: true } } },
     });
 
-    if (!unit || unit.apartmentId !== params.id) {
+    if (!unit || unit.apartmentId !== id) {
       return NextResponse.json({ success: false, error: 'Unit not found' }, { status: 404 });
     }
 
@@ -34,7 +35,7 @@ export async function PATCH(
     const data = updateUnitSchema.parse(body);
 
     const updated = await prisma.unit.update({
-      where: { id: params.unitId },
+      where: { id: unitId },
       data: { ...data, updatedAt: new Date() },
     });
 

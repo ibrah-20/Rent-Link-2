@@ -59,17 +59,18 @@ async function getApartments(params: SearchParams) {
 export default async function ListingsPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
-  const { apartments, total, pages, page } = await getApartments(searchParams).catch(() => ({
+  const resolvedParams = await searchParams;
+  const { apartments, total, pages, page } = await getApartments(resolvedParams).catch(() => ({
     apartments: [],
     total: 0,
     pages: 0,
     page: 1,
   }));
 
-  const isVacantFeed = searchParams.vacantOnly === 'true';
-  const hasFilters = Object.values(searchParams).some(v => v);
+  const isVacantFeed = resolvedParams.vacantOnly === 'true';
+  const hasFilters = Object.values(resolvedParams).some(v => v);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -96,8 +97,8 @@ export default async function ListingsPage({
             </h1>
             <p className="text-slate-400">
               {total} {total === 1 ? 'property' : 'properties'} found
-              {searchParams.neighborhood && ` in ${searchParams.neighborhood}`}
-              {searchParams.houseType && ` · ${searchParams.houseType.replace(/_/g, ' ')}`}
+              {resolvedParams.neighborhood && ` in ${resolvedParams.neighborhood}`}
+              {resolvedParams.houseType && ` · ${resolvedParams.houseType.replace(/_/g, ' ')}`}
             </p>
           </div>
         </div>
@@ -135,7 +136,7 @@ export default async function ListingsPage({
                   {Array.from({ length: pages }, (_, i) => i + 1).map(p => (
                     <a
                       key={p}
-                      href={`/listings?${new URLSearchParams({ ...searchParams, page: String(p) }).toString()}`}
+                      href={`/listings?${new URLSearchParams({ ...resolvedParams as any, page: String(p) }).toString()}`}
                       className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-semibold transition-colors ${p === page
                         ? 'bg-indigo-600 text-white'
                         : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'

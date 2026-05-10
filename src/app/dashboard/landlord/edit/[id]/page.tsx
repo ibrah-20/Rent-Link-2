@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 import { UnitStatusBadge } from '@/components/ui/VacancyBadge';
@@ -25,7 +25,9 @@ interface ApartmentDetail {
   units: Unit[];
 }
 
-export default function EditListingPage({ params }: { params: { id: string } }) {
+export default function EditListingPage() {
+  const params = useParams();
+  const id = params.id as string;
   const router = useRouter();
   const [apartment, setApartment] = useState<ApartmentDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,7 +44,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
   }, []);
 
   async function fetchApartment(token: string) {
-    const res = await fetch(`/api/apartments/${params.id}`, {
+    const res = await fetch(`/api/apartments/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();

@@ -24,8 +24,9 @@ const AMENITY_ICONS: Record<string, string> = {
   Laundry: '👕', Generator: '🔋', Elevator: '🛗', Gym: '💪',
 };
 
-export default async function ApartmentDetailPage({ params }: { params: { id: string } }) {
-  const apartment = await getApartment(params.id).catch(() => null);
+export default async function ApartmentDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const apartment = await getApartment(id).catch(() => null);
 
   if (!apartment) notFound();
 

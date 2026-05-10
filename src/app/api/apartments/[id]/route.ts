@@ -3,10 +3,11 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { getUserFromRequest, requireRole } from '@/lib/auth';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const apartment = await prisma.apartment.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         images: { orderBy: [{ isCover: 'desc' }, { createdAt: 'asc' }] },
         units: { orderBy: { unitNumber: 'asc' } },
@@ -38,12 +39,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const user = getUserFromRequest(request);
     if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
-    const apartment = await prisma.apartment.findUnique({ where: { id: params.id } });
+    const apartment = await prisma.apartment.findUnique({ where: { id } });
     if (!apartment) return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
 
     if (user.role !== 'ADMIN' && apartment.landlordId !== user.userId) {
@@ -60,7 +62,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     if (body.amenities) updateData.amenities = body.amenities;
 
     const updated = await prisma.apartment.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
     });
 
@@ -71,21 +73,22 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const user = getUserFromRequest(request);
     if (!requireRole(user, 'ADMIN', 'LANDLORD')) {
       return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
     }
 
-    const apartment = await prisma.apartment.findUnique({ where: { id: params.id } });
+    const apartment = await prisma.apartment.findUnique({ where: { id } });
     if (!apartment) return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
 
     if (user!.role !== 'ADMIN' && apartment.landlordId !== user!.userId) {
       return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
     }
 
-    await prisma.apartment.delete({ where: { id: params.id } });
+    await prisma.apartment.delete({ where: { id } });
     return NextResponse.json({ success: true, message: 'Apartment deleted' });
   } catch (error) {
     console.error('Delete apartment error:', error);

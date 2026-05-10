@@ -3,12 +3,13 @@ import prisma from '@/lib/prisma';
 import { getUserFromRequest } from '@/lib/auth';
 import { uploadImage } from '@/lib/cloudinary';
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const user = getUserFromRequest(request);
     if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
-    const apartment = await prisma.apartment.findUnique({ where: { id: params.id } });
+    const apartment = await prisma.apartment.findUnique({ where: { id: id } });
     if (!apartment) return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
     if (user.role !== 'ADMIN' && apartment.landlordId !== user.userId) {
       return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
@@ -23,13 +24,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     const uploaded = await Promise.all(
       images.map(async (img, idx) => {
-        const { url, publicId } = await uploadImage(img.base64, `rentlink-narok/${params.id}`);
+        const { url, publicId } = await uploadImage(img.base64, `rentlink-narok/${id}`);
         return prisma.apartmentImage.create({
           data: {
             url,
             publicId,
             isCover: img.isCover || idx === 0,
-            apartmentId: params.id,
+            apartmentId: id,
           },
         });
       })
