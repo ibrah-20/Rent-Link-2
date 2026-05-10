@@ -24,7 +24,7 @@ async function getVacantListings() {
     orderBy: { updatedAt: 'desc' },
     include: {
       images: { where: { isCover: true }, take: 1 },
-      units: { select: { id: true, status: true } },
+      units: { select: { id: true, status: true, unitNumber: true, apartmentId: true, updatedAt: true } },
     },
   });
 }
@@ -39,7 +39,7 @@ async function getMacedoniaListings() {
     orderBy: { createdAt: 'desc' },
     include: {
       images: { where: { isCover: true }, take: 1 },
-      units: { select: { id: true, status: true } },
+      units: { select: { id: true, status: true, unitNumber: true, apartmentId: true, updatedAt: true } },
     },
   });
 }
@@ -51,7 +51,7 @@ async function getAllListings() {
     orderBy: { createdAt: 'desc' },
     include: {
       images: { where: { isCover: true }, take: 1 },
-      units: { select: { id: true, status: true } },
+      units: { select: { id: true, status: true, unitNumber: true, apartmentId: true, updatedAt: true } },
     },
   });
 }
@@ -182,7 +182,7 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {enriched(vacantListings).map(apt => (
-              <ApartmentCard key={apt.id} apartment={apt as any} />
+              <ApartmentCard key={apt.id} apartment={apt as unknown as Parameters<typeof ApartmentCard>[0]['apartment']} />
             ))}
           </div>
         </section>
@@ -205,7 +205,7 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {enriched(macedoniaListings).map(apt => (
-              <ApartmentCard key={apt.id} apartment={apt as any} />
+              <ApartmentCard key={apt.id} apartment={apt as unknown as Parameters<typeof ApartmentCard>[0]['apartment']} />
             ))}
           </div>
         </section>
@@ -228,7 +228,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {allListings.length > 0
             ? enriched(allListings).map(apt => (
-              <ApartmentCard key={apt.id} apartment={apt as any} />
+              <ApartmentCard key={apt.id} apartment={apt as unknown as Parameters<typeof ApartmentCard>[0]['apartment']} />
             ))
             : Array.from({ length: 8 }).map((_, i) => <ApartmentCardSkeleton key={i} />)
           }
