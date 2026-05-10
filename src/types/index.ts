@@ -7,17 +7,17 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  phone?: string;
+  phone?: string | null;
   role: Role;
-  avatar?: string;
+  avatar?: string | null;
   isVerified: boolean;
-  createdAt: string;
+  createdAt: string | Date;
 }
 
 export interface ApartmentImage {
   id: string;
   url: string;
-  publicId?: string;
+  publicId?: string | null;
   isCover: boolean;
   apartmentId: string;
 }
@@ -25,12 +25,13 @@ export interface ApartmentImage {
 export interface Unit {
   id: string;
   unitNumber: string;
-  floor?: number;
+  floor?: number | null;
   status: UnitStatus;
-  price?: number;
-  notes?: string;
+  price?: number | null;
+  notes?: string | null;
   apartmentId: string;
-  updatedAt: string;
+  updatedAt: string | Date;
+  createdAt?: string | Date;
 }
 
 export interface Apartment {
@@ -44,15 +45,15 @@ export interface Apartment {
   amenities: string[];
   address: string;
   neighborhood: string;
-  latitude?: number;
-  longitude?: number;
+  latitude?: number | null;
+  longitude?: number | null;
   landlordId: string;
-  landlord?: Partial<User>;
+  landlord?: Partial<User> | null;
   images?: ApartmentImage[];
   units?: Unit[];
   vacantCount?: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
 
 export interface JWTPayload {

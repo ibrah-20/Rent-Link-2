@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     include: {
       landlord: { select: { id: true, name: true, email: true, phone: true } },
       images: { where: { isCover: true }, take: 1 },
-      _count: { select: { units: true } },
+      units: true,
     },
   });
 

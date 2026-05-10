@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: 'desc' },
         include: {
           images: { where: { isCover: true }, take: 1 },
-          units: { select: { id: true, status: true } },
+          units: true,
         },
       });
 
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: 'desc' },
         include: {
           images: { where: { isCover: true }, take: 1 },
-          units: { select: { id: true, unitNumber: true, status: true, price: true } },
+          units: true,
           landlord: { select: { id: true, name: true, phone: true } },
         },
       }),
