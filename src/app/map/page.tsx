@@ -158,10 +158,10 @@ export default function MapPage() {
                 options={mapOptions}
               >
                 {/* Safe Marker Rendering */}
-                {mapReady && window.google && apartments.length > 0 && apartments.map((apt) => (
+                {mapReady && window.google && apartments.length > 0 && apartments.filter(apt => apt.latitude != null && apt.longitude != null).map((apt) => (
                   <MarkerF
                     key={apt.id}
-                    position={{ lat: apt.latitude, lng: apt.longitude }}
+                    position={{ lat: apt.latitude!, lng: apt.longitude! }}
                     onClick={() => setSelected(apt)}
                     icon={{
                       path: window.google.maps.SymbolPath.CIRCLE,
@@ -174,9 +174,9 @@ export default function MapPage() {
                   />
                 ))}
 
-                {selected && (
+                {selected && selected.latitude != null && selected.longitude != null && (
                   <InfoWindowF
-                    position={{ lat: selected.latitude, lng: selected.longitude }}
+                    position={{ lat: selected.latitude!, lng: selected.longitude! }}
                     onCloseClick={() => setSelected(null)}
                   >
                     <div className="p-0 min-w-[240px] max-w-[280px]">
@@ -235,8 +235,10 @@ export default function MapPage() {
                       key={apt.id}
                       onClick={() => {
                         setSelected(apt);
-                        map?.panTo({ lat: apt.latitude, lng: apt.longitude });
-                        map?.setZoom(16);
+                        if (apt.latitude != null && apt.longitude != null) {
+                          map?.panTo({ lat: apt.latitude, lng: apt.longitude });
+                          map?.setZoom(16);
+                        }
                       }}
                       className={`w-full text-left p-4 hover:bg-slate-800/60 transition-all ${selected?.id === apt.id ? 'bg-indigo-500/10 border-l-2 border-indigo-500' : ''}`}
                     >
