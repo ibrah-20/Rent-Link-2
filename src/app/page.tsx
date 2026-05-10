@@ -24,7 +24,7 @@ async function getVacantListings() {
     orderBy: { updatedAt: 'desc' },
     include: {
       images: { where: { isCover: true }, take: 1 },
-      units: { select: { id: true, status: true, unitNumber: true, apartmentId: true, updatedAt: true } },
+      units: true,
     },
   });
 }
@@ -39,7 +39,7 @@ async function getMacedoniaListings() {
     orderBy: { createdAt: 'desc' },
     include: {
       images: { where: { isCover: true }, take: 1 },
-      units: { select: { id: true, status: true, unitNumber: true, apartmentId: true, updatedAt: true } },
+      units: true,
     },
   });
 }
@@ -51,7 +51,7 @@ async function getAllListings() {
     orderBy: { createdAt: 'desc' },
     include: {
       images: { where: { isCover: true }, take: 1 },
-      units: { select: { id: true, status: true, unitNumber: true, apartmentId: true, updatedAt: true } },
+      units: true,
     },
   });
 }

@@ -39,7 +39,7 @@ async function getApartments(params: SearchParams) {
       orderBy: [{ updatedAt: 'desc' }],
       include: {
         images: { where: { isCover: true }, take: 1 },
-        units: { select: { id: true, status: true, unitNumber: true, apartmentId: true, updatedAt: true } },
+        units: true,
       },
     }),
     prisma.apartment.count({ where }),
