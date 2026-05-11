@@ -10,7 +10,19 @@ import {
 } from '@react-google-maps/api';
 import { MapPin, Home, Info, ArrowRight, Loader2 } from 'lucide-react';
 import { Navbar } from '@/components/landing/Navbar';
-import LeafletMap from '@/components/Map/LeafletMap';
+import dynamic from 'next/dynamic';
+
+const LeafletMap = dynamic(() => import('@/components/Map/LeafletMap'), { 
+  ssr: false,
+  loading: () => (
+    <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-10">
+      <div className="text-center">
+        <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mx-auto mb-3" />
+        <p className="text-slate-400 text-sm font-medium">Loading fallback map...</p>
+      </div>
+    </div>
+  )
+});
 import { VacancyBadge } from '@/components/ui/VacancyBadge';
 import { formatPrice, getHouseTypeLabel } from '@/lib/utils';
 import { Apartment } from '@/types';
