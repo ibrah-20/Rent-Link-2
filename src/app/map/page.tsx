@@ -10,6 +10,7 @@ import {
 } from '@react-google-maps/api';
 import { MapPin, Home, Info, ArrowRight, Loader2 } from 'lucide-react';
 import { Navbar } from '@/components/landing/Navbar';
+import LeafletMap from '@/components/Map/LeafletMap';
 import { VacancyBadge } from '@/components/ui/VacancyBadge';
 import { formatPrice, getHouseTypeLabel } from '@/lib/utils';
 import { Apartment } from '@/types';
@@ -135,20 +136,7 @@ export default function MapPage() {
                   <p className="text-slate-400 text-sm font-medium">Loading map...</p>
                 </div>
               </div>
-            ) : !isValidKey ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-900 p-6 z-10 text-center">
-                <div className="max-w-xs">
-                  <MapPin className="w-16 h-16 text-indigo-500/40 mx-auto mb-4" />
-                  <h2 className="text-white font-bold text-xl mb-2">Google Maps Key Required</h2>
-                  <p className="text-slate-400 text-sm mb-4">
-                    Please add a valid <strong>NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</strong> to your .env.local to enable the real-time map.
-                  </p>
-                  <div className="p-2 bg-slate-800 rounded border border-slate-700 text-[10px] text-indigo-300 font-mono">
-                    API Key: {apiKey || 'Missing'}
-                  </div>
-                </div>
-              </div>
-            ) : (
+            ) : isValidKey ? (
               <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={center}
@@ -183,19 +171,13 @@ export default function MapPage() {
                       <div className="rounded-lg overflow-hidden bg-white">
                         <div className="h-28 relative">
                           {selected.images?.[0] ? (
-                            <img 
-                              src={selected.images[0].url} 
-                              alt={selected.name}
-                              className="w-full h-full object-cover"
-                            />
+                            <img src={selected.images[0].url} alt={selected.name} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full bg-slate-100 flex items-center justify-center">
                               <Home className="w-8 h-8 text-slate-300" />
                             </div>
                           )}
-                          <div className="absolute top-2 left-2">
-                            <VacancyBadge vacantCount={selected.vacantCount} totalUnits={selected.totalUnits} size="sm" />
-                          </div>
+                          <div className="absolute top-2 left-2"><VacancyBadge vacantCount={selected.vacantCount} totalUnits={selected.totalUnits} size="sm" /></div>
                         </div>
                         <div className="p-3">
                           <h3 className="font-display font-bold text-slate-900 text-sm mb-1">{selected.name}</h3>
@@ -204,10 +186,7 @@ export default function MapPage() {
                               <p className="text-indigo-600 font-bold text-sm leading-none">{formatPrice(selected.pricePerMonth)}</p>
                               <p className="text-slate-400 text-[10px]">{getHouseTypeLabel(selected.houseType)}</p>
                             </div>
-                            <Link 
-                              href={`/listings/${selected.id}`}
-                              className="flex items-center gap-1 text-[10px] font-bold text-indigo-600 hover:text-indigo-700"
-                            >
+                            <Link href={`/listings/${selected.id}`} className="flex items-center gap-1 text-[10px] font-bold text-indigo-600 hover:text-indigo-700">
                               Details <ArrowRight className="w-3 h-3" />
                             </Link>
                           </div>
@@ -217,6 +196,8 @@ export default function MapPage() {
                   </InfoWindowF>
                 )}
               </GoogleMap>
+            ) : (
+              <LeafletMap apartments={apartments} selected={selected} setSelected={setSelected} />
             )}
           </div>
 
