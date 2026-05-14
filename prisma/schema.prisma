@@ -48,6 +48,9 @@ model User {
 
   apartments   Apartment[]
   savedListings SavedListing[]
+  reviews      Review[]
+  alerts       VacancyAlert[]
+  bookings     Booking[]
 }
 
 model Apartment {
@@ -63,14 +66,21 @@ model Apartment {
   neighborhood String
   latitude     Float?
   longitude    Float?
+  isVerified   Boolean       @default(false)
+  averageRating Float        @default(0)
+  reviewCount   Int          @default(0)
   landlordId   String
   landlord     User          @relation(fields: [landlordId], references: [id], onDelete: Cascade)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
   images       ApartmentImage[]
+  media        ApartmentMedia[]
   units        Unit[]
   savedBy      SavedListing[]
+  reviews      Review[]
+  bookings     Booking[]
+  alerts       VacancyAlert[]
 
   @@index([neighborhood])
   @@index([houseType])
@@ -82,6 +92,15 @@ model ApartmentImage {
   url         String
   publicId    String?
   isCover     Boolean   @default(false)
+  apartmentId String
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+}
+
+model ApartmentMedia {
+  id          String    @id @default(cuid())
+  url         String
+  type        String    // 'video' or 'image'
   apartmentId String
   apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
@@ -111,4 +130,52 @@ model SavedListing {
   createdAt   DateTime  @default(now())
 
   @@unique([userId, apartmentId])
+}
+
+model Review {
+  id          String    @id @default(cuid())
+  rating      Float
+  comment     String?
+  security    Int
+  water       Int
+  internet    Int
+  cleanliness Int
+  noise       Int
+  userId      String
+  apartmentId String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+}
+
+model VacancyAlert {
+  id          String    @id @default(cuid())
+  userId      String
+  location    String?
+  houseType   HouseType?
+  maxPrice    Float?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apartmentId String?
+  apartment   Apartment? @relation(fields: [apartmentId], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  userId      String
+  apartmentId String
+  status      BookingStatus @default(PENDING)
+  viewingDate DateTime?
+  message     String?
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apartment   Apartment     @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }

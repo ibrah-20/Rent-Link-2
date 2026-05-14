@@ -1,9 +1,10 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { ArrowRight, MapPin, Home, Shield, Zap, TrendingUp, Users } from 'lucide-react';
+import { ArrowRight, MapPin, Home, Shield, Zap, TrendingUp, Users, Plus, Search } from 'lucide-react';
 import { Navbar } from '@/components/landing/Navbar';
 import { ApartmentCard, ApartmentCardSkeleton } from '@/components/apartments/ApartmentCard';
 import prisma from '@/lib/prisma';
+import { VacancyFeed } from '@/components/home/VacancyFeed';
 
 async function getStats() {
   const [totalApartments, totalUnits, vacantUnits] = await Promise.all([
@@ -47,7 +48,7 @@ async function getMacedoniaListings() {
 async function getAllListings() {
   return prisma.apartment.findMany({
     where: { status: 'APPROVED' },
-    take: 8,
+    take: 12,
     orderBy: { createdAt: 'desc' },
     include: {
       images: { where: { isCover: true }, take: 1 },
@@ -68,170 +69,165 @@ export default async function HomePage() {
     listings.map(a => ({ ...a, vacantCount: a.units.filter((u: any) => u.status === 'VACANT').length }));
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center bg-hero-gradient overflow-hidden noise-overlay">
-        {/* Background orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
-        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-violet-500/15 rounded-full blur-2xl animate-float" style={{ animationDelay: '1.5s' }} />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
-          <div className="max-w-3xl">
-            {/* Live badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
-              <span className="relative flex w-2 h-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
-              </span>
-              <span className="text-white/90 text-xs font-medium">
-                {stats.vacantUnits} units available right now in Narok
-              </span>
-            </div>
-
-            <h1 className="font-display font-black text-5xl md:text-7xl lg:text-8xl text-white leading-[1.05] mb-6 tracking-tighter">
-              Find Your{' '}
-              <span className="text-cyan-400 inline-block">
-                Perfect Home
-              </span>
-              <br />
-              in Narok
-            </h1>
-
-            <p className="text-slate-300 text-lg md:text-xl max-w-xl mb-8 leading-relaxed">
-              Real-time rental listings across Gate A, B, C, D, Macedonia, and all Narok neighborhoods.
-              Vacant rooms highlighted instantly. 🔴
-            </p>
-
-            {/* CTA buttons */}
-            <div className="flex flex-wrap gap-3 mb-12">
-              <Link
-                href="/listings"
-                className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-semibold text-sm shadow-neon-indigo hover:scale-105 transition-all"
-              >
-                Browse Listings
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/listings?vacantOnly=true"
-                className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm text-white font-semibold text-sm hover:bg-white/20 transition-all"
-              >
-                <span className="relative flex w-2 h-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full w-2 h-2 bg-red-500" />
-                </span>
-                Vacant Now
-              </Link>
-              <Link
-                href="/map"
-                className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm text-white font-semibold text-sm hover:bg-white/20 transition-all"
-              >
-                <MapPin className="w-4 h-4" />
-                Map View
-              </Link>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 max-w-sm">
-              {[
-                { value: stats.totalApartments, label: 'Apartments', icon: Home },
-                { value: stats.totalUnits, label: 'Total Units', icon: TrendingUp },
-                { value: stats.vacantUnits, label: 'Vacant Now', icon: Zap, highlight: true },
-              ].map(({ value, label, icon: Icon, highlight }) => (
-                <div key={label} className={`rounded-2xl p-3 ${highlight ? 'bg-red-500/20 border border-red-400/30' : 'bg-white/10 border border-white/10'} backdrop-blur-sm text-center`}>
-                  <Icon className={`w-4 h-4 mx-auto mb-1 ${highlight ? 'text-red-400' : 'text-slate-300'}`} />
-                  <p className="font-display font-bold text-white text-xl">{value}</p>
-                  <p className="text-slate-400 text-xs">{label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+      <section className="relative min-h-[90vh] flex items-center bg-slate-900 overflow-hidden noise-overlay">
+        {/* Animated Background Gradients */}
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/30 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-cyan-500/20 rounded-full blur-[120px]" />
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-          <span className="text-white/40 text-xs">Scroll to explore</span>
-          <div className="w-5 h-8 border border-white/20 rounded-full flex items-start justify-center p-1">
-            <div className="w-1 h-2 bg-white/40 rounded-full animate-bounce" />
-          </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
+            <div className="max-w-4xl">
+              {/* Live badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8">
+                <span className="relative flex w-2.5 h-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full w-2.5 h-2.5 bg-emerald-500" />
+                </span>
+                <span className="text-white/80 text-xs font-medium">
+                  {stats.vacantUnits} units available right now in Narok
+                </span>
+              </div>
+
+              <h1 className="font-display font-black text-7xl md:text-8xl lg:text-9xl text-white leading-[0.9] mb-12 tracking-tighter uppercase italic">
+                Find Your <br />
+                <span className="text-cyan-400">Perfect <br /> Home</span> <br />
+                in Narok
+              </h1>
+
+              <p className="text-slate-400 text-lg max-w-xl mb-12 leading-relaxed font-medium">
+                Real-time rental listings across Gate A, B, C, D, Macedonia, and all Narok neighborhoods. Vacant rooms highlighted instantly. 🔴
+              </p>
+
+              {/* CTA buttons / Search Bar */}
+              <div className="max-w-xl mb-16">
+                <form 
+                  action="/listings"
+                  method="GET"
+                  className="flex items-center p-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl group focus-within:border-indigo-500/50 transition-all shadow-2xl"
+                >
+                  <div className="flex-1 flex items-center gap-3 px-4">
+                    <Search className="w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
+                    <input 
+                      type="text" 
+                      name="neighborhood"
+                      placeholder="Search by neighborhood (e.g. Macedonia)"
+                      className="w-full bg-transparent border-none text-white placeholder:text-slate-500 focus:ring-0 text-sm font-medium py-3"
+                    />
+                  </div>
+                  <button 
+                    type="submit"
+                    className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-500 transition-all flex items-center gap-2"
+                  >
+                    Browse
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
+              </div>
+
+              {/* Live Feed Section - Moved below */}
+              <div className="max-w-2xl mt-8">
+                <div className="relative">
+                  <div className="absolute -inset-4 bg-indigo-500/10 rounded-[40px] blur-3xl" />
+                  <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 shadow-2xl">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                        <h3 className="text-white font-bold uppercase tracking-tighter text-sm">Live Feed</h3>
+                      </div>
+                      <span className="text-slate-500 text-[10px] font-mono">Narok v2.0</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {vacantListings.slice(0, 4).map((apt: any) => (
+                        <div 
+                          key={apt.id}
+                          className="bg-white/5 border border-white/5 rounded-2xl p-4 hover:bg-white/10 transition-colors cursor-pointer group"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="text-white font-bold text-sm line-clamp-1 group-hover:text-indigo-400 transition-colors">
+                              {apt.name}
+                            </h4>
+                            <span className="text-emerald-400 font-bold text-xs">KSh {apt.pricePerMonth}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="px-2 py-0.5 rounded-md bg-white/5 text-slate-400 text-[10px] font-medium border border-white/5 uppercase">
+                              {apt.neighborhood}
+                            </div>
+                            <div className="text-[10px] text-slate-500 font-medium italic">
+                              Updated {new Date(apt.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <Link href="/listings?vacantOnly=true" className="mt-8 block text-center py-4 rounded-xl bg-indigo-500/20 text-indigo-300 font-bold text-sm hover:bg-indigo-500/30 transition-all">
+                      View All Live Vacancies
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
       </section>
 
-      {/* Vacant Feed Section */}
-      {vacantListings.length > 0 && (
-        <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Horizontal Vacancy Feed */}
+      <section className="py-12 bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="relative flex w-3 h-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full w-3 h-3 bg-red-500" />
-                </span>
-                <span className="text-red-500 text-sm font-bold uppercase tracking-wide">Live Vacancy Feed</span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-red-500 animate-pulse" />
               </div>
-              <h2 className="font-display font-bold text-3xl text-slate-900">
-                Available Right Now
-              </h2>
+              <div>
+                <h2 className="font-display font-bold text-2xl text-slate-900 dark:text-white">
+                  Trending Now
+                </h2>
+                <p className="text-slate-500 text-sm">Most recently updated vacancies in town</p>
+              </div>
             </div>
-            <Link href="/listings?vacantOnly=true" className="hidden sm:flex items-center gap-1 text-indigo-600 text-sm font-semibold hover:gap-2 transition-all">
-              See all vacancies <ArrowRight className="w-4 h-4" />
+            <Link href="/listings?vacantOnly=true" className="text-sm font-bold text-indigo-600 dark:text-cyan-400 hover:underline">
+              See more
             </Link>
           </div>
+          <VacancyFeed />
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {enriched(vacantListings).map(apt => (
-              <ApartmentCard key={apt.id} apartment={apt} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Macedonia Section */}
-      {macedoniaListings.length > 0 && (
-        <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-white rounded-3xl shadow-sm border border-slate-100 my-8">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <p className="text-indigo-600 text-sm font-semibold uppercase tracking-wide mb-1">Macedonia, Narok</p>
-              <h2 className="font-display font-bold text-3xl text-slate-900">
-                Verified Apartments in Macedonia
-              </h2>
-            </div>
-            <Link href="/listings?neighborhood=Macedonia" className="hidden sm:flex items-center gap-1 text-indigo-600 text-sm font-semibold hover:gap-2 transition-all">
-              Explore Macedonia <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {enriched(macedoniaListings).map(apt => (
-              <ApartmentCard key={apt.id} apartment={apt} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* All Listings */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <p className="text-indigo-600 text-sm font-semibold uppercase tracking-wide mb-1">All Properties</p>
-            <h2 className="font-display font-bold text-3xl text-slate-900">
-              Every Listing in Narok
+      {/* Featured Neighborhoods */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="max-w-2xl">
+            <h2 className="font-display font-black text-4xl md:text-5xl text-slate-900 dark:text-white mb-4 tracking-tight">
+              Explore Neighborhoods
             </h2>
+            <p className="text-slate-500 dark:text-slate-400 text-lg">
+              Find the best hostels and apartments in your preferred area of Narok town.
+            </p>
           </div>
-          <Link href="/listings" className="hidden sm:flex items-center gap-1 text-indigo-600 text-sm font-semibold hover:gap-2 transition-all">
-            View all <ArrowRight className="w-4 h-4" />
-          </Link>
+          <div className="flex gap-2">
+             {['Gate A', 'Gate B', 'Gate C', 'Macedonia', 'Town'].map(loc => (
+               <button key={loc} className="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:border-indigo-500 dark:hover:border-cyan-500 transition-all">
+                 {loc}
+               </button>
+             ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {allListings.length > 0
-            ? enriched(allListings).map(apt => (
-              <ApartmentCard key={apt.id} apartment={apt} />
-            ))
-            : Array.from({ length: 8 }).map((_, i) => <ApartmentCardSkeleton key={i} />)
-          }
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {enriched(allListings).slice(0, 8).map((apt) => (
+            <div key={apt.id}>
+              {/* <ApartmentCard apartment={apt} /> */}
+              <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl h-48">
+                {apt.name}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

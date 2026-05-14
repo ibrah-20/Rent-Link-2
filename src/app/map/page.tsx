@@ -26,6 +26,7 @@ const LeafletMap = dynamic(() => import('@/components/Map/LeafletMap'), {
 import { VacancyBadge } from '@/components/ui/VacancyBadge';
 import { formatPrice, getHouseTypeLabel } from '@/lib/utils';
 import { Apartment } from '@/types';
+import { MapFilters } from '@/components/Map/MapFilters';
 
 // Safe Default Coordinates for Narok, Kenya
 const center = {
@@ -119,20 +120,26 @@ export default function MapPage() {
     <div className="min-h-screen bg-slate-900 flex flex-col">
       <Navbar />
 
-      <div className="flex-1 flex flex-col pt-16">
+      <div className="flex-1 flex flex-col pt-20">
         {/* Header Bar */}
-        <div className="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+        <div className="bg-slate-900/50 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between z-20">
           <div>
-            <h1 className="font-display font-bold text-white text-lg">Interactive Map</h1>
-            <p className="text-slate-400 text-xs">{apartments.length} Properties in Narok</p>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <h1 className="font-display font-black text-white text-xl tracking-tight">Real-Time Discovery</h1>
+            </div>
+            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">{apartments.length} Properties in Narok</p>
           </div>
-          <div className="flex items-center gap-3 text-xs">
-            <span className="flex items-center gap-1.5 text-red-400 font-bold">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+          
+          <MapFilters />
+
+          <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest">
+            <span className="flex items-center gap-2 text-red-400">
+              <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
               Vacant
             </span>
-            <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <span className="flex items-center gap-2 text-emerald-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
               Occupied
             </span>
           </div>
