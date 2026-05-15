@@ -47,7 +47,7 @@ export async function POST(
         internet,
         cleanliness,
         noise,
-        userId: user.id,
+        userId: user.userId,
         apartmentId: id,
       },
     });
