@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin, Home, Phone, Shield, Wifi, Car, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Navbar } from '@/components/landing/Navbar';
-import { motion } from 'framer-motion';
+
 import { VacancyBadge, UnitStatusBadge } from '@/components/ui/VacancyBadge';
 import prisma from '@/lib/prisma';
 import { formatPrice, getHouseTypeLabel, timeAgo } from '@/lib/utils';
@@ -71,10 +71,8 @@ export default async function ApartmentDetailPage({ params }: { params: Promise<
 
           {/* Title overlay */}
           <div className="absolute bottom-10 left-10 right-10">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="max-w-3xl"
+            <div 
+              className="max-w-3xl animate-in slide-in-from-bottom-5 fade-in duration-700"
             >
               <span className="inline-block px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold mb-4 uppercase tracking-widest shadow-lg shadow-indigo-600/30">
                 {getHouseTypeLabel(apartment.houseType)}
@@ -84,7 +82,7 @@ export default async function ApartmentDetailPage({ params }: { params: Promise<
                 <MapPin className="w-5 h-5 text-cyan-400" />
                 {apartment.address}, {apartment.neighborhood}, Narok
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
