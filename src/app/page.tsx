@@ -221,12 +221,7 @@ export default async function HomePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {enriched(allListings).slice(0, 8).map((apt) => (
-            <div key={apt.id}>
-              {/* <ApartmentCard apartment={apt} /> */}
-              <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl h-48">
-                {apt.name}
-              </div>
-            </div>
+            <ApartmentCard key={apt.id} apartment={apt} />
           ))}
         </div>
       </section>

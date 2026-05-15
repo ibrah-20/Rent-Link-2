@@ -26,7 +26,13 @@ export function VacancyFeed() {
     try {
       const res = await fetch('/api/vacancies');
       const data = await res.json();
-      setVacancies(data);
+      if (Array.isArray(data)) {
+        setVacancies(data);
+      } else if (data && data.data && Array.isArray(data.data)) {
+        setVacancies(data.data);
+      } else {
+        console.error('API did not return an array of vacancies:', data);
+      }
     } catch (error) {
       console.error('Failed to fetch vacancies:', error);
     } finally {
