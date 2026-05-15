@@ -144,7 +144,7 @@ export default function AdminDashboard() {
                         <span>·</span>
                         <span>{formatPrice(apt.pricePerMonth)}/mo</span>
                         <span>·</span>
-                        <span>{apt._count.units} units</span>
+                        <span>{apt._count?.units || (apt as any).units?.length || (apt as any).totalUnits || 0} units</span>
                         <span>·</span>
                         <span>{timeAgo(apt.createdAt)}</span>
                       </div>
