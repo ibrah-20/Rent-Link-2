@@ -51,6 +51,7 @@ model User {
   reviews      Review[]
   alerts       VacancyAlert[]
   bookings     Booking[]
+  receivedBookings Booking[] @relation("LandlordBookings")
 }
 
 model Apartment {
@@ -165,17 +166,24 @@ enum BookingStatus {
   APPROVED
   REJECTED
   CANCELLED
+  COMPLETED
 }
 
 model Booking {
-  id          String        @id @default(cuid())
-  userId      String
-  apartmentId String
-  status      BookingStatus @default(PENDING)
-  viewingDate DateTime?
-  message     String?
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  apartment   Apartment     @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id            String        @id @default(cuid())
+  userId        String
+  apartmentId   String
+  landlordId    String
+  customerName  String?
+  customerPhone String?
+  customerEmail String?
+  moveInDate    DateTime?
+  status        BookingStatus @default(PENDING)
+  viewingDate   DateTime?
+  message       String?
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apartment     Apartment     @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  landlord      User          @relation("LandlordBookings", fields: [landlordId], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }

@@ -5,8 +5,14 @@ import { Calendar, Send, CheckCircle2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export function BookingForm({ apartmentId }: { apartmentId: string }) {
-  const [viewingDate, setViewingDate] = useState('');
-  const [message, setMessage] = useState('');
+  const [formData, setFormData] = useState({
+    customerName: '',
+    customerEmail: '',
+    customerPhone: '',
+    moveInDate: '',
+    viewingDate: '',
+    message: ''
+  });
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -17,7 +23,7 @@ export function BookingForm({ apartmentId }: { apartmentId: string }) {
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apartmentId, viewingDate, message }),
+        body: JSON.stringify({ apartmentId, ...formData }),
       });
 
       if (res.status === 401) {
@@ -36,6 +42,10 @@ export function BookingForm({ apartmentId }: { apartmentId: string }) {
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
   if (success) {
     return (
       <div className="text-center p-6 bg-emerald-50 dark:bg-emerald-500/10 rounded-2xl border border-emerald-100 dark:border-emerald-500/20">
@@ -50,17 +60,72 @@ export function BookingForm({ apartmentId }: { apartmentId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Preferred Viewing Date</label>
-        <div className="relative">
-          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Name</label>
           <input
-            type="date"
+            type="text"
             required
-            value={viewingDate}
-            onChange={(e) => setViewingDate(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+            name="customerName"
+            value={formData.customerName}
+            onChange={handleChange}
+            className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm outline-none"
+            placeholder="John Doe"
           />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Phone</label>
+          <input
+            type="tel"
+            required
+            name="customerPhone"
+            value={formData.customerPhone}
+            onChange={handleChange}
+            className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm outline-none"
+            placeholder="0712345678"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
+        <input
+          type="email"
+          name="customerEmail"
+          value={formData.customerEmail}
+          onChange={handleChange}
+          className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm outline-none"
+          placeholder="john@example.com"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Move-in Date</label>
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="date"
+              required
+              name="moveInDate"
+              value={formData.moveInDate}
+              onChange={handleChange}
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm outline-none"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Viewing Date</label>
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="date"
+              name="viewingDate"
+              value={formData.viewingDate}
+              onChange={handleChange}
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm outline-none"
+            />
+          </div>
         </div>
       </div>
 
@@ -68,10 +133,11 @@ export function BookingForm({ apartmentId }: { apartmentId: string }) {
         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Message to Landlord</label>
         <textarea
           rows={3}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          name="message"
+          value={formData.message}
+          onChange={handleChange}
           placeholder="I'm interested in viewing this property..."
-          className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+          className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm outline-none"
         />
       </div>
 

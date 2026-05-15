@@ -25,6 +25,7 @@ export function VacancyFeed() {
   const fetchVacancies = async () => {
     try {
       const res = await fetch('/api/vacancies');
+      if (!res.ok) throw new Error('Network response was not ok');
       const data = await res.json();
       if (Array.isArray(data)) {
         setVacancies(data);
