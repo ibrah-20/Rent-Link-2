@@ -45,7 +45,7 @@ export function ApartmentReels({ media }: { media: Media[] }) {
         >
           {media[index].type === 'video' ? (
             <video
-              ref={(el) => (videoRefs.current[index] = el)}
+              ref={(el) => { videoRefs.current[index] = el; }}
               src={media[index].url}
               className="w-full h-full object-cover"
               loop
