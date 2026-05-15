@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
     const booking = await prisma.booking.create({
       data: {
-        userId: user.id,
+        userId: user.userId,
         apartmentId,
         viewingDate: viewingDate ? new Date(viewingDate) : null,
         message,
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     }
 
     const bookings = await prisma.booking.findMany({
-      where: { userId: user.id },
+      where: { userId: user.userId },
       include: {
         apartment: {
           select: { name: true, address: true },

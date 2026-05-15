@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const existing = await prisma.savedListing.findUnique({
       where: {
         userId_apartmentId: {
-          userId: user.id,
+          userId: user.userId,
           apartmentId,
         },
       },
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     } else {
       await prisma.savedListing.create({
         data: {
-          userId: user.id,
+          userId: user.userId,
           apartmentId,
         },
       });
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     }
 
     const saved = await prisma.savedListing.findMany({
-      where: { userId: user.id },
+      where: { userId: user.userId },
       select: { apartmentId: true },
     });
 
