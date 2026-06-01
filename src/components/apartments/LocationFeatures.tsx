@@ -1,6 +1,6 @@
 'use client';
 
-import { MapPin, GraduationCap, Building2, ShoppingBag, Walkway } from 'lucide-react';
+import { MapPin, GraduationCap, Building2, ShoppingBag } from 'lucide-react';
 
 interface Point {
   name: string;
