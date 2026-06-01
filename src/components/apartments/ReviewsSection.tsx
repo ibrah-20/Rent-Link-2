@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Star, Shield, Droplets, Wifi, Sparkles, Volume2, User, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
+import { cn } from '@/lib/utils';
 
 interface Review {
   id: string;
